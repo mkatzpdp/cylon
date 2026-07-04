@@ -18,4 +18,5 @@
 //     NOTE:  A VALUE OF 7777 ON THE SWITCH REGISTER IS ABOUT 64 SECONDS
 //            PER ROTATION ON A PDP-8/E.
 //
+To assemble:  palbart cylon.pa
 
