@@ -1,0 +1,70 @@
+
+
+
+      //                                                                  Page 1
+
+
+    1              //
+    2              //  THIS PROGRAM ROTATES A BIT, BACK AND FORTH, THROUGH THE ACCUMULATOR.
+    3              //  SIMILAR TO THE EYES ON A CYLON ROBOT FROM BATTLESTAR GALACTICA.
+    4              //
+    5              //  THE SPEED OF THE ROTATION IS CONTROLLED BY THE SWITCH REGISTER.
+    6              //
+    7              //  TO START:
+    8              //     SET THE SWITCH REGISTSER TO 0100
+    9              //     PRESS LOAD ADDRESS/ADDRESS LOAD
+   10              //     PRESS START (8/I) OR CLEAR AND CONTINUE (8/E)
+   11              //
+   12              //     A SINGLE BIT WILL BE ROTATE THROUGH THE ACCUMULATOR
+   13              //     AT A RATE OF APPROXIMATELY 1 SECOND PER ROTATION.
+   14              //
+   15              //     TO SPEED UP OR SLOW DOWN THE ROTATION SPEED CHANGE THE
+   16              //     VALUE ON THE SWITCH REGISTER.
+   17              //
+   18              //     NOTE:  A VALUE OF 7777 ON THE SWITCH REGISTER IS ABOUT 64 SECONDS
+   19              //            PER ROTATION
+   20              //
+   21        0100          *100
+   22 00100  7001  START,  IAC             // START WITH 1 IN THE AC
+   23 00101  4113  LOOP,   JMS DELAY       // WAIT FOR A BIT
+   24 00102  7004  SKIP1,  RAL             // SHIFT THAT BIT LEFT
+   25 00103  7420          SNL             // DID WE SHIFT THE BIT INTO THE LINK?
+   26 00104  5101          JMP LOOP        // NO:  KEEP LOOPING
+   27 00105  5107          JMP SKIP        // YES:  SKIP THE DELAY AND ROTATE THE BIT BACK
+   28                                      //       THIS INSTRUCTION IS HERE BECAUSE THE 8/E
+   29                                      //       DOES NOT HAVE THE LINK REGISTER LIGHT
+   30                                      //       ON THE SAME ROW WITH THE ACCUMULATOR LIGHTS
+   31                                      //       REMOVE THIS INSTRUCTION FOR THE 8/I, 8/L OR
+   32                                      //       STRAIGHT 8.
+   33 00106  4113  LOOP2,  JMS DELAY       // DELAY
+   34 00107  7010  SKIP,   RAR             // SHIFT THE BIT RIGHT
+   35 00110  7420          SNL             // DID IT ROTATE INTO THE LINK?
+   36 00111  5106          JMP LOOP2       // NO:  RINSE AND REPEAT
+   37 00112  5102          JMP SKIP1       // SEE THE JMP SKIP COMMENT ABOVE
+   38              //
+   39              //  START OF DELAY SUBROUTINE
+   40              //
+   41 00113  0000  DELAY,  0               // ENTRY POINT
+   42 00114  7421          MQL             // SAVE THE BIT POSITION IN AC IN THE MQ
+   43 00115  7404          OSR             // READ THE SWITCH REGISTER
+   44 00116  7040          CMA             // COMPLIMENT THE AC BECAUSE WE ARE COUNTING UP NOT DOWN
+   45 00117  3127          DCA TEMP1       // SAVE THE OUTER LOOP COUNTER
+   46 00120  7521          SWP             // RESTORE THE BIT INTO THE AC FROM THE MQ (MQ DESTROYED)
+   47 00121  2126  LOOP1,  ISZ TEMP        // INCREMENT THE INNER LOOP COUNTER
+   48 00122  5121          JMP LOOP1       // LOOP UNTIL IT IS ZERO
+   49 00123  2127          ISZ TEMP1       // INCREMENT THE OUTER LOOP
+   50 00124  5121          JMP LOOP1       // LOOP BOTH INNER AND OUTER LOOP UNTIL THE OUTER LOOP IS ZERO
+
+
+
+      //                                                                  Page 2
+
+
+   51 00125  5513          JMP I DELAY     // RETURN FROM SUBROUTINE
+   52              
+   53 00126  0000  TEMP,   0               // COUNTER FOR OUTER LOOP
+   54 00127  0000  TEMP1,  0               // COUNTER FOR INNER LOOP
+   55                      $
+
+      No detected errors
+      No links generated
